@@ -21,35 +21,47 @@ class Member {
 }
 
 class MyApp extends StatelessWidget {
-  final Member member = Member(
-    name: "Phùng Ngọc Đức",
-    studentId: "20224132",
-    birthYear: "2004",
-    school: "ĐH Công Nghệ Đông Á",
-    major: "CNTT",
-  );
+  final List<Member> members = [
+    Member(
+      name: "Phùng Ngọc Đức",
+      studentId: "20224132",
+      birthYear: "2004",
+      school: "ĐH Công Nghệ Đông Á",
+      major: "CNTT",
+    ),
+    Member(
+      name: "Trương Ngọc Đặng",
+      studentId: "20224213",
+      birthYear: "2004",
+      school: "ĐH Công Nghệ Đông Á",
+      major: "Công nghệ thông tin",
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
-      home: HomePage(member: member),
+      home: HomePage(members: members),
     );
   }
 }
 
 class HomePage extends StatelessWidget {
-  final Member member;
+  final List<Member> members;
 
-  HomePage({required this.member});
+  HomePage({required this.members});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Danh sách thành viên"),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      ),
       body: Container(
-        width: double.infinity,
-        height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xff4facfe), Color(0xff00f2fe)],
@@ -57,59 +69,58 @@ class HomePage extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
         ),
-        child: Center(
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 500),
-                  pageBuilder: (_, __, ___) => DetailPage(member: member),
-                  transitionsBuilder: (_, anim, __, child) {
-                    return FadeTransition(opacity: anim, child: child);
-                  },
+        child: ListView.builder(
+          padding: EdgeInsets.all(15),
+          itemCount: members.length,
+          itemBuilder: (context, index) {
+            final member = members[index];
+
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DetailPage(member: member),
+                  ),
+                );
+              },
+              child: Container(
+                margin: EdgeInsets.only(bottom: 15),
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              );
-            },
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              padding: EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(25),
-                border: Border.all(color: Colors.white.withOpacity(0.3)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.person, size: 40, color: Colors.blue),
-                  ),
-                  SizedBox(height: 15),
-                  Text(
-                    member.name,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.person, color: Colors.blue),
                     ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    "MSSV: ${member.studentId}",
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    " Nhấn để xem chi tiết",
-                    style: TextStyle(fontSize: 12, color: Colors.white54),
-                  )
-                ],
+                    SizedBox(width: 15),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          member.name,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          "MSSV: ${member.studentId}",
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
@@ -147,8 +158,7 @@ class DetailPage extends StatelessWidget {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
-      body: Container(
-        width: double.infinity,
+      body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
           children: [
@@ -160,13 +170,9 @@ class DetailPage extends StatelessWidget {
             SizedBox(height: 15),
             Text(
               member.name,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
-
             infoBox(Icons.badge, "MSSV: ${member.studentId}"),
             infoBox(Icons.cake, "Năm sinh: ${member.birthYear}"),
             infoBox(Icons.school, member.school),
